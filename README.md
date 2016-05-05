@@ -6,5 +6,5 @@ useful development packages.
 
 ## Packages
 
-  - [`python`](https://packages.debian.org/search?keywords=python&suite=stable)
-  - [`git`](https://packages.debian.org/search?keywords=git&suite=stable)
+  - [`python`](https://packages.debian.org/search?suite=stable&keywords=python)
+  - [`git`](https://packages.debian.org/search?suite=stable&keywords=git)
