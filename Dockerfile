@@ -9,4 +9,5 @@ RUN apt-get update && \
 
 # Install useful packages
 RUN apt-get install -y \
+  python \
   git
