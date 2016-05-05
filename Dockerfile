@@ -6,8 +6,3 @@ RUN apt-get update && \
   apt-get -y dist-upgrade && \
   apt-get -y autoremove && \
   apt-get clean
-
-# Install useful packages
-RUN apt-get install -y \
-  python \
-  git
