@@ -8,5 +8,5 @@ RUN apt-get update && \
   apt-get clean
 
 # Install useful packages
-RUN apt-get install \
+RUN apt-get install -y \
   git
