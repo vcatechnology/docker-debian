@@ -7,6 +7,12 @@ RUN apt-get update && \
   apt-get -y autoremove && \
   apt-get clean
 
+# Generate locales
+RUN cat /etc/locale.gen | expand | sed 's/^# .*$//g' | sed 's/^#$//g' | egrep -v '^$' | sed 's/^#//g' > /tmp/locale.gen \
+  && mv -f /tmp/locale.gen /etc/locale.gen \
+  && locale-gen
+ENV LANG=en_GB.utf8
+
 # Create install script
 RUN touch                         /usr/local/bin/vca-install-package && \
   chmod +x                        /usr/local/bin/vca-install-package && \
