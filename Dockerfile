@@ -17,32 +17,40 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.license=MIT \
       org.label-schema.schema-version="1.0"
 
-# Update all packages
-RUN apt-get update && \
-  apt-get -y dist-upgrade && \
-  apt-get -y autoremove && \
-  apt-get clean
-
-# Generate locales
-RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
-    && localedef -i en_GB -c -f UTF-8 -A /usr/share/locale/locale.alias en_GB.UTF-8 \
-    && apt-get remove -y --purge locales
-ENV LANG=en_GB.utf8
+# Make sure APT operations are non-interactive
+ENV DEBIAN_FRONTEND noninteractive
 
 # Create install script
-RUN touch                         /usr/local/bin/vca-install-package && \
-  chmod +x                        /usr/local/bin/vca-install-package && \
-  echo '#! /bin/sh'            >> /usr/local/bin/vca-install-package && \
-  echo 'set -e'                >> /usr/local/bin/vca-install-package && \
-  echo 'apt-get update'        >> /usr/local/bin/vca-install-package && \
-  echo 'apt-get -y install $@' >> /usr/local/bin/vca-install-package && \
-  echo 'apt-get -y clean'      >> /usr/local/bin/vca-install-package
+RUN touch                                                                 /usr/local/bin/vca-install-package \
+ && chmod +x                                                              /usr/local/bin/vca-install-package \
+ && echo '#! /bin/sh'                                                  >> /usr/local/bin/vca-install-package \
+ && echo 'set -e'                                                      >> /usr/local/bin/vca-install-package \
+ && echo 'apt-get -q update'                                           >> /usr/local/bin/vca-install-package \
+ && echo 'apt-get -qy -o Dpkg::Options::="--force-confnew" install $@' >> /usr/local/bin/vca-install-package \
+ && echo 'apt-get -qy clean'                                           >> /usr/local/bin/vca-install-package
 
 # Create uninstall script
-RUN touch                                /usr/local/bin/vca-uninstall-package && \
-  chmod +x                               /usr/local/bin/vca-uninstall-package && \
-  echo '#! /bin/sh'                   >> /usr/local/bin/vca-uninstall-package && \
-  echo 'set -e'                       >> /usr/local/bin/vca-uninstall-package && \
-  echo 'apt-get remove -y --purge $@' >> /usr/local/bin/vca-uninstall-package && \
-  echo 'apt-get -y autoremove'        >> /usr/local/bin/vca-uninstall-package && \
-  echo 'apt-get -y clean'             >> /usr/local/bin/vca-uninstall-package
+RUN touch                                   /usr/local/bin/vca-uninstall-package \
+ && chmod +x                                /usr/local/bin/vca-uninstall-package \
+ && echo '#! /bin/sh'                    >> /usr/local/bin/vca-uninstall-package \
+ && echo 'set -e'                        >> /usr/local/bin/vca-uninstall-package \
+ && echo 'apt-get -qy remove --purge $@' >> /usr/local/bin/vca-uninstall-package \
+ && echo 'apt-get -qy autoremove'        >> /usr/local/bin/vca-uninstall-package \
+ && echo 'apt-get -qy clean'             >> /usr/local/bin/vca-uninstall-package
+
+# Generate locales
+RUN vca-install-package apt-utils \
+ && echo en_GB.UTF-8 > /etc/locale.gen \
+ && vca-install-package locales
+ENV LANG=en_GB.UTF-8
+
+# Set up the timezone
+RUN vca-install-package tzdata \
+ && echo "Europe/London" > /etc/timezone \
+ && dpkg-reconfigure tzdata
+
+# Update all packages
+RUN apt-get -q update \
+ && apt-get -qy -o Dpkg::Options::="--force-confnew" dist-upgrade \
+ && apt-get -qy autoremove \
+ && apt-get -q clean
