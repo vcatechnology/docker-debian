@@ -40,9 +40,9 @@ RUN touch                                   /usr/local/bin/vca-uninstall-package
 
 # Generate locales
 RUN vca-install-package apt-utils locales \
- && sed -i 's/^# \(en_GB.UTF-8 UTF-8\)/\1/' /etc/locale.gen
- && echo 'LANG="en_GB.UTF-8"' > /etc/default/locale
- && dpkg-reconfigure locales
+ && sed -i 's/^# \(en_GB.UTF-8 UTF-8\)/\1/' /etc/locale.gen \
+ && echo 'LANG="en_GB.UTF-8"' > /etc/default/locale \
+ && dpkg-reconfigure locales \
  && update-locale LANG=en_GB.UTF-8
 
 # Set up the timezone
