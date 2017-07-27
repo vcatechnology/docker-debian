@@ -43,3 +43,8 @@ RUN apt-get -q update \
  && apt-get -qy -o Dpkg::Options::="--force-confnew" dist-upgrade \
  && apt-get -qy autoremove \
  && apt-get -q clean
+
+# Install the NodeSource repository as Node/NPM are unsupported on Stretch
+RUN vca-install-package gnupg curl \
+ && curl -sL https://deb.nodesource.com/setup_6.x | bash - \
+ && vca-uninstall-package gnupg curl
