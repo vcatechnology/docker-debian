@@ -21,22 +21,10 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
 ENV DEBIAN_FRONTEND noninteractive
 
 # Create install script
-RUN touch                                                                 /usr/local/bin/vca-install-package \
- && chmod +x                                                              /usr/local/bin/vca-install-package \
- && echo '#! /bin/sh'                                                  >> /usr/local/bin/vca-install-package \
- && echo 'set -e'                                                      >> /usr/local/bin/vca-install-package \
- && echo 'apt-get -q update'                                           >> /usr/local/bin/vca-install-package \
- && echo 'apt-get -qy -o Dpkg::Options::="--force-confnew" install $@' >> /usr/local/bin/vca-install-package \
- && echo 'apt-get -qy clean'                                           >> /usr/local/bin/vca-install-package
+ADD vca-install-package /usr/local/bin
 
 # Create uninstall script
-RUN touch                                   /usr/local/bin/vca-uninstall-package \
- && chmod +x                                /usr/local/bin/vca-uninstall-package \
- && echo '#! /bin/sh'                    >> /usr/local/bin/vca-uninstall-package \
- && echo 'set -e'                        >> /usr/local/bin/vca-uninstall-package \
- && echo 'apt-get -qy remove --purge $@' >> /usr/local/bin/vca-uninstall-package \
- && echo 'apt-get -qy autoremove'        >> /usr/local/bin/vca-uninstall-package \
- && echo 'apt-get -qy clean'             >> /usr/local/bin/vca-uninstall-package
+ADD vca-uninstall-package /usr/local/bin
 
 # Generate locales
 RUN vca-install-package apt-utils locales \

@@ -1,0 +1,5 @@
+#! /bin/sh
+set -e
+apt-get -qy remove --purge $@
+apt-get -qy autoremove
+apt-get -qy clean
